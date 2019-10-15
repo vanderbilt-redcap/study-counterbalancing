@@ -1,0 +1,62 @@
+{
+  "name": "Study Counterbalancing",
+
+  "namespace": "Vanderbilt\\StudyCounterbalancingExternalModule",
+
+  "authors": [
+    {
+      "name": "Ryan Moore",
+      "email": "datacore@vumc.org",
+      "institution": "Vanderbilt University Medical Center"
+    }
+  ],
+
+  "description": "Method to provide study counterbalancing for participants. Meant to help prevent participants being influenced by questions being asked in a specific order every time.",
+
+  "framework-version": 2,
+
+  "permissions": [
+    "select_data",
+    "redcap_save_record",
+    "redcap_every_page_top"
+  ],
+
+  "project-settings": [
+    {
+      "key": "intake-form",
+      "name": "Form to Complete to Randomize Participant",
+      "type":"form-list",
+      "repeatable": false
+    },
+    {
+      "key": "counter-forms",
+      "name": "List of Forms to be Included in Counterbalancing",
+      "type": "sub_settings",
+      "repeatable": true,
+      "sub_settings": [
+        {
+          "key": "cb-forms",
+          "name": "Form/Survey To Counterbalance",
+          "type":"form-list",
+          "required": true
+        },
+        {
+          "key": "survey-view",
+          "name": "View Form as a Survey?",
+          "type":"radio",
+          "choices": [
+            {
+              "value": "no",
+              "name": "No"
+            },
+            {
+              "value": "yes",
+              "name": "Yes"
+            }
+          ],
+          "required": true
+        }
+      ]
+    }
+  ]
+}
