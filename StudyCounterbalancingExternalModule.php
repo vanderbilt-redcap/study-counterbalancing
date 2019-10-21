@@ -22,6 +22,13 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             print_r($chooseRandom);
             echo "</pre>";
         }*/
+        /*echo "<pre>";
+        print_r($_POST);
+        echo "</pre>";
+        $recordData = \Records::getData(67, 'array', array(317), array('vcc_application_survey_initial_complete'));
+        echo "<pre>";
+        print_r($recordData);
+        echo "</pre>";*/
     }
 
     function redcap_save_record($project_id, $record, $instrument, $event_id, $group_id = NULL, $survey_hash = NULL, $response_id = NULL, $repeat_instance = 1) {
@@ -55,9 +62,11 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
 
         $viewAsSurveyIndex = array_keys($randomizedForms,$nextInstrument)[0];
         $redirectURL = "";
+
         if (!empty($randomizedForms) && !empty($randomizeSetting[$record]) && $nextInstrument != "") {
-            $recordData = \Records::getData($project_id, 'array', array($record), array($nextInstrument.'_complete'));
-            if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes") {
+            $recordData = \Records::getData($project_id, 'array', array($record), array($instrument."_complete",$nextInstrument.'_complete'));
+
+            if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument.'_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument.'_complete'] == "2")) {
                 if ($recordData[$record][$event_id][$nextInstrument.'_complete'] != "" || $recordData[$record]['repeat_instances'][$event_id][$nextInstrument][$repeat_instance][$nextInstrument.'_complete'] != "") {
                     $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
                     $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
@@ -75,6 +84,14 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
         }
 
         /*echo "Trying to go to: $redirectURL<br/>";
+        echo "Record Data:<br/>";
+        echo "<pre>";
+        print_r($recordData);
+        echo "</pre>";
+        echo "Record: $record<br/>";
+        echo "Event: $event_id<br/>";
+        echo "First check: ".$recordData[$record][$event_id][$instrument.'_complete']."<br/>";
+        echo "Second check: ".$recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument.'_complete']."<br/>";
         $intakeForm = $this->getProjectSetting('intake-form');
         $randomizedForms = $this->getProjectSetting('cb-forms');
         $viewSurveys = $this->getProjectSetting('survey-view');
@@ -95,7 +112,8 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
         exit;*/
         if ($redirectURL != "") {
             header("Location: $redirectURL");
-            exit;
+            $this->exitAfterHook();
+            //exit;
         }
     }
 
