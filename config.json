@@ -23,38 +23,52 @@
 
   "project-settings": [
     {
-      "key": "intake-form",
-      "name": "Form to Complete to Randomize Participant",
-      "type":"form-list",
-      "repeatable": false
-    },
-    {
-      "key": "counter-forms",
-      "name": "List of Forms to be Included in Counterbalancing",
+      "key": "counterbalance-group",
+      "name": "Surveys Grouped in Counterbalancing",
       "type": "sub_settings",
       "repeatable": true,
       "sub_settings": [
         {
-          "key": "cb-forms",
-          "name": "Form/Survey To Counterbalance",
+          "key": "intake-form",
+          "name": "Form to Complete to Randomize Participant",
           "type":"form-list",
-          "required": true
+          "repeatable": false
         },
         {
-          "key": "survey-view",
-          "name": "View Form as a Survey?",
-          "type":"radio",
-          "choices": [
+          "key": "event-id",
+          "name": "Event to Apply This Counterbalancing To",
+          "type":"event-list",
+          "repeatable": false
+        },
+        {
+          "key": "counter-forms",
+          "name": "List of Forms to be Included in Counterbalancing",
+          "type": "sub_settings",
+          "repeatable": true,
+          "sub_settings": [
             {
-              "value": "no",
-              "name": "No"
+              "key": "cb-forms",
+              "name": "Form/Survey To Counterbalance",
+              "type":"form-list",
+              "required": true
             },
             {
-              "value": "yes",
-              "name": "Yes"
+              "key": "survey-view",
+              "name": "View Form as a Survey?",
+              "type":"radio",
+              "choices": [
+                {
+                  "value": "no",
+                  "name": "No"
+                },
+                {
+                  "value": "yes",
+                  "name": "Yes"
+                }
+              ],
+              "required": true
             }
-          ],
-          "required": true
+          ]
         }
       ]
     }

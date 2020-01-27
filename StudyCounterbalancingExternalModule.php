@@ -8,7 +8,59 @@ use ExternalModules\ExternalModules;
 class StudyCounterbalancingExternalModule extends AbstractExternalModule
 {
     function redcap_every_page_top() {
-        /*$testForms = array("first","second","third","fourth","fifth");
+        /*$intakeForms = $this->getProjectSetting('intake-form');
+        $randomizedFormsArray = $this->getProjectSetting('cb-forms');
+        $viewSurveysArray = $this->getProjectSetting('survey-view');
+        $events = $this->getProjectSetting('event-id');
+        $randomizeSettings = json_decode($this->getProjectSetting('randomization'),true);
+
+        foreach ($intakeForms as $index => $intakeForm) {
+            $event = $events[$index];
+            $randomizedForms = $randomizedFormsArray[$index];
+            $viewSurveys = $viewSurveysArray[$index];
+            $randomizeSetting = $randomizeSettings[$index];
+            //if (empty($randomizeSetting)) {
+                $randomOptions = $this->randomizeForms($randomizedForms);
+                echo "Random options:<br/>";
+                echo "<pre>";
+                print_r($randomOptions);
+                echo "</pre>";
+                echo "Existing: <br/>";
+                echo "<pre>";
+                print_r($randomizeSetting);
+                echo "</pre>";
+                list($chosenRandomization,$existingIndex) = $this->chooseRandomization($randomOptions,$randomizeSetting);
+                echo "Chosen: <br/>";
+                echo "<pre>";
+                print_r($chosenRandomization);
+                echo "</pre>";
+                echo "Existing: <br/>";
+                echo "<pre>";
+                print_r($existingIndex);
+                echo "</pre>";
+                if (is_numeric($existingIndex)) {
+                    echo "Exists<br/>";
+                    $randomizeSettings[$index][$existingIndex] = array('form_orders' => $randomOptions[$chosenRandomization], 'count' => $randomizeSettings[$index][$existingIndex]['count']+1);
+                }
+                else {
+                    echo "Doesn't exist<br/>";
+                    $randomizeSettings[$index][] = array('form_orders' => $randomOptions[$chosenRandomization], 'count' => 1);
+                }
+            //}
+        }
+
+        echo "Save settings:<br/>";
+        echo "<pre>";
+        print_r($randomizeSettings);
+        echo "</pre>";
+        $this->setProjectSetting('randomization',json_encode($randomizeSettings),91);*/
+
+
+        /*$randomizeSetting = json_decode($this->getProjectSetting('randomization'),true);
+        echo "<pre>";
+        print_r($randomizeSetting);
+        echo "</pre>";
+        $testForms = array("first","second","third","fourth","fifth");
         $checkRandom = $this->randomizeForms($testForms);
         echo "Random Options:<br/>";
         echo "<pre>";
@@ -21,8 +73,8 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             echo "<pre>";
             print_r($chooseRandom);
             echo "</pre>";
-        }*/
-        /*echo "<pre>";
+        }
+        echo "<pre>";
         print_r($_POST);
         echo "</pre>";
         $recordData = \Records::getData(67, 'array', array(317), array('vcc_application_survey_initial_complete'));
@@ -34,52 +86,61 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
     function redcap_save_record($project_id, $record, $instrument, $event_id, $group_id = NULL, $survey_hash = NULL, $response_id = NULL, $repeat_instance = 1) {
         global $redcap_version, $Proj;
 
-        $intakeForm = $this->getProjectSetting('intake-form');
-        $randomizedForms = $this->getProjectSetting('cb-forms');
-        $viewSurveys = $this->getProjectSetting('survey-view');
-        $randomizeSetting = json_decode($this->getProjectSetting('randomization'),true);
+        $intakeForms = $this->getProjectSetting('intake-form');
+        $randomizedFormsArray = $this->getProjectSetting('cb-forms');
+        $viewSurveysArray = $this->getProjectSetting('survey-view');
+        $events = $this->getProjectSetting('event-id');
+        $randomizeSettings = json_decode($this->getProjectSetting('randomization'),true);
 
-        /*$testForms = array("first","second","third","fourth","fifth","sixth");
-        $checkRandom = $this->randomizeForms($testForms);
+        $recordRandom = json_decode($this->getProjectSetting("randomization-$record-$event_id"),true);
 
-        $existingRandoms = array(array("first","second","sixth","third","fifth","fourth"),array("second","third","first","fourth","sixth","fifth"));*/
+        foreach ($intakeForms as $index => $intakeForm) {
+            $event = $events[$index];
+            $randomizedForms = $randomizedFormsArray[$index];
+            $viewSurveys = $viewSurveysArray[$index];
+            $randomizeSetting = $randomizeSettings[$index];
 
-        if ($instrument == $intakeForm && !empty($randomizedForms) && empty($randomizeSetting[$record])) {
-            $randomizeOptions = $this->randomizeForms($randomizedForms);
-            $randomizeSetting[$record] = $this->chooseRandomization($randomizeOptions,$randomizeSetting);
+            if ($instrument == $intakeForm && !empty($randomizedForms) && $event == $event_id) {
+                if (empty($recordRandom[$index])) {
+                    $randomizeOptions = $this->randomizeForms($randomizedForms);
+                    //$chosenIndex = $this->chooseRandomization($randomizeOptions,$randomizeSetting);
 
-            $this->setProjectSetting('randomization',json_encode($randomizeSetting),$project_id);
-        }
+                    list($chosenRandomization, $existingIndex) = $this->chooseRandomization($randomizeOptions, $randomizeSetting);
 
-        $currentRandomIndex = array_keys($randomizeSetting[$record],$instrument)[0];
-
-        if (in_array($instrument,$randomizeSetting[$record])) {
-            $nextInstrument = $randomizeSetting[$record][$currentRandomIndex + 1];
-        }
-        else {
-            $nextInstrument = $randomizeSetting[$record][0];
-        }
-
-        $viewAsSurveyIndex = array_keys($randomizedForms,$nextInstrument)[0];
-        $redirectURL = "";
-
-        if (!empty($randomizedForms) && !empty($randomizeSetting[$record]) && $nextInstrument != "") {
-            $recordData = \Records::getData($project_id, 'array', array($record), array($instrument."_complete",$nextInstrument.'_complete'));
-
-            if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument.'_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument.'_complete'] == "2")) {
-                if ($recordData[$record][$event_id][$nextInstrument.'_complete'] != "" || $recordData[$record]['repeat_instances'][$event_id][$nextInstrument][$repeat_instance][$nextInstrument.'_complete'] != "") {
-                    $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
-                    $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
-                }
-                else {
-                    //$surveyHashCode = $this->generateUniqueRandomSurveyHash();
-                    //$surveyHashCode = \Survey::setHash($Proj->forms[$nextInstrument]['survey_id'],"",$event_id);
-                    $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
-                    $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
+                    if (is_numeric($existingIndex)) {
+                        $randomizeSettings[$index][$existingIndex] = array('form_orders' => $randomizeOptions[$chosenRandomization], 'count' => $randomizeSettings[$index][$existingIndex]['count'] + 1);
+                    } else {
+                        $randomizeSettings[$index][] = array('form_orders' => $randomizeOptions[$chosenRandomization], 'count' => 1);
+                    }
+                    $this->setProjectSetting('randomization', json_encode($randomizeSettings), $project_id);
+                    $recordRandom[$index] = $randomizeOptions[$chosenRandomization];
                 }
             }
-            elseif ($viewSurveys[$viewAsSurveyIndex] == "no") {
-                $redirectURL = APP_PATH_WEBROOT_FULL."redcap_v".$redcap_version."/DataEntry/index.php?pid=$project_id&event_id=$event_id&page=$nextInstrument&id=$record&instance=$repeat_instance<br/>";
+            $currentRandomIndex = array_keys($recordRandom[$index], $instrument)[0];
+
+            if (in_array($instrument, $recordRandom[$index])) {
+                $nextInstrument = $recordRandom[$index][$currentRandomIndex + 1];
+            } else {
+                $nextInstrument = $recordRandom[$index][0];
+            }
+
+            $viewAsSurveyIndex = array_keys($randomizedForms, $nextInstrument)[0];
+            $redirectURL = "";
+            if (!empty($randomizedForms) && !empty($recordRandom[$index]) && $nextInstrument != "") {
+                $recordData = \Records::getData($project_id, 'array', array($record), array($instrument . "_complete", $nextInstrument . '_complete'));
+                if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] == "2")) {
+                    if ($recordData[$record][$event_id][$nextInstrument . '_complete'] != "" || $recordData[$record]['repeat_instances'][$event_id][$nextInstrument][$repeat_instance][$nextInstrument . '_complete'] != "") {
+                        $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
+                        $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
+                    } else {
+                        //$surveyHashCode = $this->generateUniqueRandomSurveyHash();
+                        //$surveyHashCode = \Survey::setHash($Proj->forms[$nextInstrument]['survey_id'],"",$event_id);
+                        $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
+                        $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
+                    }
+                } elseif ($viewSurveys[$viewAsSurveyIndex] == "no") {
+                    $redirectURL = APP_PATH_WEBROOT_FULL . "redcap_v" . $redcap_version . "/DataEntry/index.php?pid=$project_id&event_id=$event_id&page=$nextInstrument&id=$record&instance=$repeat_instance<br/>";
+                }
             }
         }
 
@@ -109,7 +170,11 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
         echo "<pre>";
         print_r($randomizeSetting);
         echo "</pre>";
+        echo "<pre>";
+        print_r($recordRandom);
+        echo "</pre>";
         exit;*/
+        $this->setProjectSetting("randomization-$record-$event_id", json_encode($recordRandom), $project_id);
         if ($redirectURL != "") {
             header("Location: $redirectURL");
             $this->exitAfterHook();
@@ -170,14 +235,29 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
      */
     function chooseRandomization($randomOrder,$existingRandomizations) {
         $countArray = array();
-        foreach ($randomOrder as $index => $ro) {;
-            $countArray[$index] = count(array_keys($existingRandomizations,$ro));
+        $existingArray = array();
+        foreach ($randomOrder as $index => $ro) {
+            $currentCount = 0;
+            $existingIndex = "";
+            foreach ($existingRandomizations as $eIndex => $existing) {
+                if ($existing['form_orders'] === $ro) {
+                    $currentCount = $existing['count'];
+                    $existingIndex = $eIndex;
+                }
+            }
+
+            $countArray[$index] = $currentCount;
+            if ($existingIndex !== "") {
+                $existingArray[$index] = $existingIndex;
+            }
         }
 
         $randIndex = array_rand((array_keys($countArray,min($countArray))));
-        $chosenRandomization = $randomOrder[array_keys($countArray,min($countArray))[$randIndex]];
+        $chosenIndex = array_keys($countArray,min($countArray))[$randIndex];
+        //$chosenRandomization = $randomOrder[array_keys($countArray,min($countArray))[$randIndex]];
 
-        return $chosenRandomization;
+        //return $chosenRandomization;
+        return array($chosenIndex, ($existingArray[$chosenIndex] !== "" ? $existingArray[$chosenIndex] : ""));
     }
 
     /*
