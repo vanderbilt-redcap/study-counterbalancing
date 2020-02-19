@@ -94,6 +94,8 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
 
         $recordRandom = json_decode($this->getProjectSetting("randomization-$record-$event_id"),true);
 
+        $redirectURL = "";
+
         foreach ($intakeForms as $index => $intakeForm) {
             $event = $events[$index];
             $randomizedForms = $randomizedFormsArray[$index];
@@ -125,7 +127,6 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             }
 
             $viewAsSurveyIndex = array_keys($randomizedForms, $nextInstrument)[0];
-            $redirectURL = "";
             if (!empty($randomizedForms) && !empty($recordRandom[$index]) && $nextInstrument != "") {
                 $recordData = \Records::getData($project_id, 'array', array($record), array($instrument . "_complete", $nextInstrument . '_complete'));
                 if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] == "2")) {
@@ -143,7 +144,6 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
                 }
             }
         }
-
         /*echo "Trying to go to: $redirectURL<br/>";
         echo "Record Data:<br/>";
         echo "<pre>";
