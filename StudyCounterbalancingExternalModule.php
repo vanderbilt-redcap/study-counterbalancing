@@ -8,7 +8,7 @@ use ExternalModules\ExternalModules;
 class StudyCounterbalancingExternalModule extends AbstractExternalModule
 {
     function redcap_every_page_top() {
-        $recordData = \Records::getData($_GET['pid'], 'array', array($_GET['id']));
+        $recordData = \Records::getData($_GET['pid'], 'array');
         echo "<pre>";
         print_r($recordData);
         echo "</pre>";
