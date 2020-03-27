@@ -173,7 +173,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
         echo "<pre>";
         print_r($recordRandom);
         echo "</pre>";
-        exit;
+        $this->exitAfterHook();
         $this->setProjectSetting("randomization-$record-$event_id", json_encode($recordRandom), $project_id);
         if ($redirectURL != "") {
             header("Location: $redirectURL");
