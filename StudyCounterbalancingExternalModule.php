@@ -8,10 +8,6 @@ use ExternalModules\ExternalModules;
 class StudyCounterbalancingExternalModule extends AbstractExternalModule
 {
     function redcap_every_page_top() {
-        $recordData = \Records::getData($_GET['pid'], 'json', array($_GET['id']));
-        echo "<pre>";
-        print_r(json_decode($recordData));
-        echo "</pre>";
         /*$intakeForms = $this->getProjectSetting('intake-form');
         $randomizedFormsArray = $this->getProjectSetting('cb-forms');
         $viewSurveysArray = $this->getProjectSetting('survey-view');
@@ -133,7 +129,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             $viewAsSurveyIndex = array_keys($randomizedForms, $nextInstrument)[0];
             if (!empty($randomizedForms) && !empty($recordRandom[$index]) && $nextInstrument != "") {
                 $recordData = \Records::getData($project_id, 'array', array($record));
-                if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] == "2")) {
+                if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][][$repeat_instance][$instrument . '_complete'])) {
                     if ($recordData[$record][$event_id][$nextInstrument . '_complete'] != "" || $recordData[$record]['repeat_instances'][$event_id][$nextInstrument][$repeat_instance][$nextInstrument . '_complete'] != "") {
                         $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
                         $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
