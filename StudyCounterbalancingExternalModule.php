@@ -8,9 +8,9 @@ use ExternalModules\ExternalModules;
 class StudyCounterbalancingExternalModule extends AbstractExternalModule
 {
     function redcap_every_page_top() {
-        $recordData = \Records::getData($_GET['pid'], 'array');
+        $recordData = \Records::getData($_GET['pid'], 'json', array($_GET['id']));
         echo "<pre>";
-        print_r($recordData);
+        print_r(json_decode($recordData));
         echo "</pre>";
         /*$intakeForms = $this->getProjectSetting('intake-form');
         $randomizedFormsArray = $this->getProjectSetting('cb-forms');
