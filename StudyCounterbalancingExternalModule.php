@@ -144,7 +144,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
                 }
             }
         }
-        /*echo "Trying to go to: $redirectURL<br/>";
+        echo "Trying to go to: $redirectURL<br/>";
         echo "Record Data:<br/>";
         echo "<pre>";
         print_r($recordData);
@@ -173,7 +173,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
         echo "<pre>";
         print_r($recordRandom);
         echo "</pre>";
-        exit;*/
+        exit;
         $this->setProjectSetting("randomization-$record-$event_id", json_encode($recordRandom), $project_id);
         if ($redirectURL != "") {
             header("Location: $redirectURL");
