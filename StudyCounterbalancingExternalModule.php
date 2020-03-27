@@ -8,6 +8,10 @@ use ExternalModules\ExternalModules;
 class StudyCounterbalancingExternalModule extends AbstractExternalModule
 {
     function redcap_every_page_top() {
+        $recordData = \Records::getData($_GET['pid'], 'array', array($_GET['id']));
+        echo "<pre>";
+        print_r($recordData);
+        echo "</pre>";
         /*$intakeForms = $this->getProjectSetting('intake-form');
         $randomizedFormsArray = $this->getProjectSetting('cb-forms');
         $viewSurveysArray = $this->getProjectSetting('survey-view');
@@ -28,7 +32,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
                 echo "Existing: <br/>";
                 echo "<pre>";
                 print_r($randomizeSetting);
-                echo "</pre>";
+                decho "</pre>";
                 list($chosenRandomization,$existingIndex) = $this->chooseRandomization($randomOptions,$randomizeSetting);
                 echo "Chosen: <br/>";
                 echo "<pre>";
