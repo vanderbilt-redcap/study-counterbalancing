@@ -85,7 +85,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
 
     function redcap_data_entry_form($project_id, $record, $instrument, $event_id, $group_id = NULL, $repeat_instance = 1) {
         //The below code was necessary for resetting module settings for a project so it could be reset with all new records.
-
+/*
         $project = new \Project($project_id);
         $events = $project->events;
 
@@ -96,7 +96,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
                     $this->removeProjectSetting("randomization-$i-$eventID");
                 }
             }
-        }
+        }*/
 
         //This code is for switching up where a record goes to fix old, invalid log mapping
         /*$recordChange = array(
