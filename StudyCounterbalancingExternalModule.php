@@ -125,6 +125,12 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             } else {
                 $nextInstrument = $recordRandom[$index][0];
             }
+            if ($project_id == 103538) {
+                echo "Instrument is $instrument, and next instrument is $nextInstrument<br/>";
+                echo "<pre>";
+                print_r($recordRandom);
+                echo "</pre>";
+            }
 
             $viewAsSurveyIndex = array_keys($randomizedForms, $nextInstrument)[0];
             if (!empty($randomizedForms) && !empty($recordRandom[$index]) && $nextInstrument != "") {
@@ -144,37 +150,39 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
                 }
             }
         }
-        /*echo "Trying to go to: $redirectURL<br/>";
-        echo "Record Data:<br/>";
-        echo "<pre>";
-        print_r($recordData);
-        echo "</pre>";
-        echo "Record: $record<br/>";
-        echo "Event: $event_id<br/>";
-        echo "First check: ".$recordData[$record][$event_id][$instrument.'_complete']."<br/>";
-        echo "Second check: ".$recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument.'_complete']."<br/>";
-        echo "Third check: ".$recordData[$record]['repeat_instances'][$event_id][''][$repeat_instance][$instrument."_complete"]."<br/>";
-        $intakeForm = $this->getProjectSetting('intake-form');
-        $randomizedForms = $this->getProjectSetting('cb-forms');
-        $viewSurveys = $this->getProjectSetting('survey-view');
-        $randomizeSetting = json_decode($this->getProjectSetting('randomization'),true);
-        echo "Intake: $intakeForm<br/>";
-        echo "Random: <br/>";
-        echo "<pre>";
-        print_r($randomizedForms);
-        echo "</pre>";
-        echo "Survey View: <br/>";
-        echo "<pre>";
-        print_r($viewSurveys);
-        echo "</pre>";
-        echo "R Setting:<br/>";
-        echo "<pre>";
-        print_r($randomizeSetting);
-        echo "</pre>";
-        echo "<pre>";
-        print_r($recordRandom);
-        echo "</pre>";
-        $this->exitAfterHook();*/
+        if ($project_id == 103538) {
+            echo "Trying to go to: $redirectURL<br/>";
+            echo "Record Data:<br/>";
+            echo "<pre>";
+            print_r($recordData);
+            echo "</pre>";
+            echo "Record: $record<br/>";
+            echo "Event: $event_id<br/>";
+            echo "First check: " . $recordData[$record][$event_id][$instrument . '_complete'] . "<br/>";
+            echo "Second check: " . $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] . "<br/>";
+            echo "Third check: " . $recordData[$record]['repeat_instances'][$event_id][''][$repeat_instance][$instrument . "_complete"] . "<br/>";
+            $intakeForm = $this->getProjectSetting('intake-form');
+            $randomizedForms = $this->getProjectSetting('cb-forms');
+            $viewSurveys = $this->getProjectSetting('survey-view');
+            $randomizeSetting = json_decode($this->getProjectSetting('randomization'), true);
+            echo "Intake: $intakeForm<br/>";
+            echo "Random: <br/>";
+            echo "<pre>";
+            print_r($randomizedForms);
+            echo "</pre>";
+            echo "Survey View: <br/>";
+            echo "<pre>";
+            print_r($viewSurveys);
+            echo "</pre>";
+            echo "R Setting:<br/>";
+            echo "<pre>";
+            print_r($randomizeSetting);
+            echo "</pre>";
+            echo "<pre>";
+            print_r($recordRandom);
+            echo "</pre>";
+            $this->exitAfterHook();
+        }
         $this->setProjectSetting("randomization-$record-$event_id", json_encode($recordRandom), $project_id);
         if ($redirectURL != "") {
             header("Location: $redirectURL");
