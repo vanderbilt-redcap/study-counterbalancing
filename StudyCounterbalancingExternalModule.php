@@ -86,9 +86,13 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
     function redcap_data_entry_form($project_id, $record, $instrument, $event_id, $group_id = NULL, $repeat_instance = 1) {
         //The below code was necessary for resetting module settings for a project so it could be reset with all new records.
 
+        $project = new \Project($project_id);
+        $events = $project->events;
         if (in_array($project_id,array(103538,102495,106458,102710,111557,111562,116774,116805,116831))) {
-            for ($i = 0; $i < 500; $i++) {
-                $this->removeProjectSetting("randomization-$i-$event_id");
+            foreach ($events as $event) {
+                for ($i = 0; $i < 500; $i++) {
+                    $this->removeProjectSetting("randomization-$i-$event");
+                }
             }
         }
 
