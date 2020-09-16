@@ -128,7 +128,7 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             if ($project_id == 103538) {
                 echo "Instrument is $instrument, and next instrument is $nextInstrument<br/>";
                 echo "<pre>";
-                print_r($recordRandom);
+                print_r($recordRandom[$index]);
                 echo "</pre>";
             }
 
