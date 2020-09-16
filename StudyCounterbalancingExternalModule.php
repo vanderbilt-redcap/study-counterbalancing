@@ -165,7 +165,10 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             $randomizedForms = $this->getProjectSetting('cb-forms');
             $viewSurveys = $this->getProjectSetting('survey-view');
             $randomizeSetting = json_decode($this->getProjectSetting('randomization'), true);
-            echo "Intake: $intakeForm<br/>";
+            echo "Intake:<br/>";
+            echo "<pre>";
+            print_r($intakeForm);
+            echo "</pre>";
             echo "Random: <br/>";
             echo "<pre>";
             print_r($randomizedForms);
