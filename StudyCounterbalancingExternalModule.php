@@ -88,10 +88,12 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
 
         $project = new \Project($project_id);
         $events = $project->events;
+
         if (in_array($project_id,array(103538,102495,106458,102710,111557,111562,116774,116805,116831))) {
-            foreach ($events as $event) {
+            foreach ($events as $eventData) {
+                foreach ($eventData['events'] as $eventID => $idData)
                 for ($i = 0; $i < 500; $i++) {
-                    $this->removeProjectSetting("randomization-$i-$event");
+                    $this->removeProjectSetting("randomization-$i-$eventID");
                 }
             }
         }
