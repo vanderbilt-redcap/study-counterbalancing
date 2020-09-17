@@ -400,8 +400,8 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             // Set the response as incomplete in the response table, update participantId if on public survey link
             $sql = "UPDATE redcap_surveys_participants p, redcap_surveys_response r
 					SET r.completion_time = null,
-						r.first_submit_time = '".date('Y-m-d h:m:s')."',
-						r.return_code = '".prep($returnCode)."'".
+						r.first_submit_time = null,
+						r.return_code = null".
                 ($participantId == "" ? "" : ", r.participant_id = '$participantId'")."
 					WHERE p.survey_id = $surveyId
 						AND p.event_id = ".prep($eventId)."
