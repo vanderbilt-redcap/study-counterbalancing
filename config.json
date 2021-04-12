@@ -28,6 +28,7 @@
 
   "permissions": [
     "select_data",
+    "redcap_data_entry_form",
     "redcap_save_record",
     "redcap_every_page_top"
   ],
