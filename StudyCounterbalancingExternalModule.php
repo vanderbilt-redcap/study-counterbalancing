@@ -84,8 +84,9 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
     }
 
     function redcap_save_record($project_id, $record, $instrument, $event_id, $group_id = NULL, $survey_hash = NULL, $response_id = NULL, $repeat_instance = 1) {
-        global $redcap_version, $Proj;
-
+        global $redcap_version;
+        $currentProject = new \Project($project_id);
+        
         $intakeForms = $this->getProjectSetting('intake-form');
         $randomizedFormsArray = $this->getProjectSetting('cb-forms');
         $viewSurveysArray = $this->getProjectSetting('survey-view');
@@ -129,13 +130,13 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
             $viewAsSurveyIndex = array_keys($randomizedForms, $nextInstrument)[0];
             if (!empty($randomizedForms) && !empty($recordRandom[$index]) && $nextInstrument != "") {
                 $recordData = \Records::getData($project_id, 'array', array($record), array($instrument . "_complete", $nextInstrument . '_complete'));
-                if ($Proj->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][''][$repeat_instance][$instrument . '_complete'])) {
+                if ($currentProject->forms[$nextInstrument]['survey_id'] != "" && $viewSurveys[$viewAsSurveyIndex] == "yes" && ($recordData[$record][$event_id][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][$instrument][$repeat_instance][$instrument . '_complete'] == "2" || $recordData[$record]['repeat_instances'][$event_id][''][$repeat_instance][$instrument . '_complete'])) {
                     if ($recordData[$record][$event_id][$nextInstrument . '_complete'] != "" || $recordData[$record]['repeat_instances'][$event_id][$nextInstrument][$repeat_instance][$nextInstrument . '_complete'] != "" || $recordData[$record]['repeat_instances'][$event_id][''][$repeat_instance][$nextInstrument . '_complete'] != "") {
                         $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
                         $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
                     } else {
                         //$surveyHashCode = $this->generateUniqueRandomSurveyHash();
-                        //$surveyHashCode = \Survey::setHash($Proj->forms[$nextInstrument]['survey_id'],"",$event_id);
+                        //$surveyHashCode = \Survey::setHash($currentProject->forms[$nextInstrument]['survey_id'],"",$event_id);
                         $surveyHashCode = $this->surveyHashByInstrument($project_id, $record, $nextInstrument, $event_id, $repeat_instance);
                         $redirectURL = APP_PATH_WEBROOT_FULL . "surveys/?s=" . $surveyHashCode["hash"];
                     }
