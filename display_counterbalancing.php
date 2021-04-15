@@ -23,7 +23,7 @@
 
         $matchingProjects = '';
         $tableString = "<h2>Participant Counterbalancing</h2>
-        <table id='counterbalance-table' class='counterbalance-table'>
+        <table id='counterbalance-table' class='counterbalance-table' style='width:90%;'>
             <thead><tr><th>Record ID</th><th>Event Name</th><th>Order of Form Counterbalancing</th></tr></thead><tbody>";
         while($row = db_fetch_assoc($result)) {
             list($settingKey,$settingRecord,$settingEvent) = explode("-",$row['key']);
@@ -47,10 +47,6 @@
     });
 </script>
 <style>
-    .counterbalance-table {
-        width:100%;
-    }
-
     .counterbalance-table th {
         background-color: lightblue;
     }
