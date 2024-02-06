@@ -145,9 +145,9 @@ class StudyCounterbalancingExternalModule extends AbstractExternalModule
                     $recordRandom[$index] = $randomizeOptions[$chosenRandomization];
                 }
             }
-            $currentRandomIndex = array_keys($recordRandom[$index], $instrument)[0];
+            $currentRandomIndex = array_keys($recordRandom[$index] ?? [], $instrument)[0];
 
-            if (in_array($instrument, $recordRandom[$index])) {
+            if (in_array($instrument, $recordRandom[$index] ?? [])) {
                 $nextInstrument = $recordRandom[$index][$currentRandomIndex + 1];
             } else {
                 $nextInstrument = $recordRandom[$index][0];
